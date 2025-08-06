@@ -9,7 +9,10 @@ app.use(cors());
 app.use(express.json());
 
 // ✅ Correct MongoDB Connection String (NO SPACES)
-mongoose.connect("mongodb+srv://lalitbhadu1111:wCYNW8Ln1bE7FQ1G@bar-code.nymzvwg.mongodb.net/barcodedb?retryWrites=true&w=majority&appName=bar-code")
+mongoose
+  .connect(
+    "mongodb+srv://lalitbhadu1111:wCYNW8Ln1bE7FQ1G@bar-code.nymzvwg.mongodb.net/barcodedb?retryWrites=true&w=majority&appName=bar-code"
+  )
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
@@ -21,9 +24,8 @@ app.post("/api/save-data", async (req, res) => {
     const newData = new Data(req.body);
 
     // Generate Unique Barcode
-const uniqueNum = Math.floor(100000 + Math.random() * 900000); // 6 digits
-newData.barcodeText = `${uniqueNum}EHCC`;
-
+    const uniqueNum = Math.floor(100 + Math.random() * 900);
+    newData.barcodeText = `${uniqueNum}EHCC`; // Example: 723EHCC
 
     // URL for scanning
     newData.scanUrl = `https://barcode.tradebiznetwork.com/scan/${newData.barcodeText}`;
@@ -77,24 +79,27 @@ app.get("/api/barcode/:id", async (req, res) => {
     if (!data) return res.status(404).send("Data not found");
 
     // ✅ Generate QR Code with full URL
-    bwipjs.toBuffer({
-      bcid: "qrcode",          // ✅ QR Code instead of Code128
-      text: data.scanUrl,      // Full URL
-      scale: 4,                // Size of QR
-      includetext: false
-    }, (err, png) => {
-      if (err) {
-        res.status(500).send("Error generating QR code");
-      } else {
-        res.type("image/png");
-        res.send(png);
+    bwipjs.toBuffer(
+      {
+        bcid: "qrcode", // ✅ Use QR Code for URL
+        text: data.scanUrl,
+        scale: 4, // ✅ Bigger and easy to scan
+        version: 5,
+        includetext: false, // ✅ No text below QR
+      },
+      (err, png) => {
+        if (err) {
+          res.status(500).send("Error generating QR code");
+        } else {
+          res.type("image/png");
+          res.send(png);
+        }
       }
-    });
+    );
   } catch (error) {
     res.status(500).send("Server error");
   }
 });
-
 
 /*------------------------------------------------------
  ✅ 5. Default Route
