@@ -21,8 +21,9 @@ app.post("/api/save-data", async (req, res) => {
     const newData = new Data(req.body);
 
     // Generate Unique Barcode
-    const uniqueNum = Math.floor(100000000000 + Math.random() * 900000000000).toString();
-    newData.barcodeText = `${uniqueNum}EHCC`;
+const uniqueNum = Math.floor(100000 + Math.random() * 900000); // 6 digits
+newData.barcodeText = `${uniqueNum}EHCC`;
+
 
     // URL for scanning
     newData.scanUrl = `https://barcode.tradebiznetwork.com/scan/${newData.barcodeText}`;
@@ -75,17 +76,15 @@ app.get("/api/barcode/:id", async (req, res) => {
     const data = await Data.findById(req.params.id);
     if (!data) return res.status(404).send("Data not found");
 
+    // ✅ Generate QR Code with full URL
     bwipjs.toBuffer({
-      bcid: "code128",
-      text: data.scanUrl,
-      scale: 1,
-      height: 8,
-      includetext: true,
-      textxalign: "center",
-      textsize: 8
+      bcid: "qrcode",          // ✅ QR Code instead of Code128
+      text: data.scanUrl,      // Full URL
+      scale: 4,                // Size of QR
+      includetext: false
     }, (err, png) => {
       if (err) {
-        res.status(500).send("Error generating barcode");
+        res.status(500).send("Error generating QR code");
       } else {
         res.type("image/png");
         res.send(png);
@@ -95,6 +94,7 @@ app.get("/api/barcode/:id", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
 
 /*------------------------------------------------------
  ✅ 5. Default Route
