@@ -78,18 +78,18 @@ app.get("/api/barcode/:id", async (req, res) => {
     const data = await Data.findById(req.params.id);
     if (!data) return res.status(404).send("Data not found");
 
-    // ✅ Ye wahi link hai jo scan hone par user ko milega
+    // ✅ URL jo barcode me encode hoga
     const frontendUrl = `https://barcode.tradebiznetwork.com/scan/${data.barcodeText}`;
 
     bwipjs.toBuffer(
       {
         bcid: 'code128',        // ✅ Standard barcode format
-        text: data.barcodeText, // ✅ Sirf code print hoga (723EHCC)
-        scale: 2,               // ✅ Thoda thin bars
-        height: 15,             // ✅ Small height (default 10–20 hota hai)
-        includetext: true,      // ✅ Niche text likha hoga
-        textxalign: 'center',   // ✅ Text center me
-        textsize: 12,           // ✅ Text ka size
+        text: frontendUrl,      // ✅ URL encode karo
+        scale: 2,               
+        height: 15,             
+        includetext: true,      // ✅ Niche URL bhi text me print hoga
+        textxalign: 'center',   
+        textsize: 10,           
         paddingwidth: 6,
         paddingheight: 4
       },
