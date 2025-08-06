@@ -9,13 +9,8 @@ app.use(cors());
 app.use(express.json());
 
 // ✅ Connect to MongoDB Atlas
-mongoose
-  .connect(
-    "mongodb+srv://lalitbhadu1111:wCYNW8Ln1bE7FQ1G@bar-code.nymzvwg.mongodb.net/?retryWrites=true&w=majority&appName=bar-code",
-    {
-      serverSelectionTimeoutMS: 20000,
-    }
-  )
+mongoose.connect("mongodb+srv://lalitbhadu1111:wCYNW8Ln1bE7FQ1G@bar-code.nymzvwg.mongodb.net/barcodedb?retryWrites=true&w=majority&appName=bar-code")
+
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
