@@ -8,9 +8,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Connect to MongoDB Atlas
+// ✅ Correct MongoDB Connection String (NO SPACES)
 mongoose.connect("mongodb+srv://lalitbhadu1111:wCYNW8Ln1bE7FQ1G@bar-code.nymzvwg.mongodb.net/barcodedb?retryWrites=true&w=majority&appName=bar-code")
-
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
@@ -25,9 +24,8 @@ app.post("/api/save-data", async (req, res) => {
     const uniqueNum = Math.floor(100000000000 + Math.random() * 900000000000).toString();
     newData.barcodeText = `${uniqueNum}EHCC`;
 
-    // URL for scanning (replace with your domain later)
-// ✅ Inside save-data route
-newData.scanUrl = `https://barcode.tradebiznetwork.com/scan/${newData.barcodeText}`;
+    // URL for scanning
+    newData.scanUrl = `https://barcode.tradebiznetwork.com/scan/${newData.barcodeText}`;
 
     await newData.save();
 
@@ -77,11 +75,10 @@ app.get("/api/barcode/:id", async (req, res) => {
     const data = await Data.findById(req.params.id);
     if (!data) return res.status(404).send("Data not found");
 
-    // ✅ Generate barcode with URL encoded
     bwipjs.toBuffer({
-      bcid: "code128", 
-      text: data.scanUrl,       // <== Real URL here
-      scale: 1,                 // Smaller size
+      bcid: "code128",
+      text: data.scanUrl,
+      scale: 1,
       height: 8,
       includetext: true,
       textxalign: "center",
@@ -98,7 +95,6 @@ app.get("/api/barcode/:id", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-
 
 /*------------------------------------------------------
  ✅ 5. Default Route
