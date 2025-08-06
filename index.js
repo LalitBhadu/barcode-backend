@@ -78,19 +78,19 @@ app.get("/api/barcode/:id", async (req, res) => {
     const data = await Data.findById(req.params.id);
     if (!data) return res.status(404).send("Data not found");
 
-    // ✅ URL jo barcode me encode hoga
+    // ✅ Encode URL with special prefix "http://" so scanners detect it
     const frontendUrl = `https://barcode.tradebiznetwork.com/scan/${data.barcodeText}`;
 
     bwipjs.toBuffer(
       {
-        bcid: 'code128',        // ✅ Standard barcode format
-        text: frontendUrl,      // ✅ URL encode karo
-        scale: 2,               
-        height: 15,             
-        includetext: true,      // ✅ Niche URL bhi text me print hoga
-        textxalign: 'center',   
-        textsize: 10,           
-        paddingwidth: 6,
+        bcid: 'code128',            // ✅ Standard Barcode
+        text: `http://${frontendUrl.replace('https://', '')}`,  
+        scale: 2,
+        height: 15,
+        includetext: true,          // ✅ Text visible below
+        textxalign: 'center',
+        textsize: 12,
+        paddingwidth: 8,
         paddingheight: 4
       },
       (err, png) => {
