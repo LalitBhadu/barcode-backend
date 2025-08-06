@@ -78,18 +78,24 @@ app.get("/api/barcode/:id", async (req, res) => {
     const data = await Data.findById(req.params.id);
     if (!data) return res.status(404).send("Data not found");
 
-    // ✅ Generate QR Code with full URL
+    // ✅ Ye wahi link hai jo scan hone par user ko milega
+    const frontendUrl = `https://barcode.tradebiznetwork.com/scan/${data.barcodeText}`;
+
     bwipjs.toBuffer(
       {
-        bcid: "qrcode", // ✅ Use QR Code for URL
-        text: data.scanUrl,
-        scale: 4, // ✅ Bigger and easy to scan
-        version: 5,
-        includetext: false, // ✅ No text below QR
+        bcid: 'code128',        // ✅ Standard barcode format
+        text: data.barcodeText, // ✅ Sirf code print hoga (723EHCC)
+        scale: 2,               // ✅ Thoda thin bars
+        height: 15,             // ✅ Small height (default 10–20 hota hai)
+        includetext: true,      // ✅ Niche text likha hoga
+        textxalign: 'center',   // ✅ Text center me
+        textsize: 12,           // ✅ Text ka size
+        paddingwidth: 6,
+        paddingheight: 4
       },
       (err, png) => {
         if (err) {
-          res.status(500).send("Error generating QR code");
+          res.status(500).send("Error generating barcode");
         } else {
           res.type("image/png");
           res.send(png);
@@ -100,6 +106,7 @@ app.get("/api/barcode/:id", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
 
 /*------------------------------------------------------
  ✅ 5. Default Route
