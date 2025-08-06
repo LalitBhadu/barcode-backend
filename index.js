@@ -31,7 +31,8 @@ app.post("/api/save-data", async (req, res) => {
     newData.barcodeText = `${uniqueNum}EHCC`;
 
     // URL for scanning (replace with your domain later)
-    newData.scanUrl = `http://localhost:3000/scan/${newData.barcodeText}`;
+// ✅ Inside save-data route
+newData.scanUrl = `https://barcode.tradebiznetwork.com/scan/${newData.barcodeText}`;
 
     await newData.save();
 
@@ -81,29 +82,28 @@ app.get("/api/barcode/:id", async (req, res) => {
     const data = await Data.findById(req.params.id);
     if (!data) return res.status(404).send("Data not found");
 
-    bwipjs.toBuffer(
-      {
-        bcid: "code128", // Standard barcode
-        text: `http://localhost:3000/scan/${data.barcodeText}`, // Encode URL
-        scale: 1, // smaller width
-        height: 8, // smaller height
-        includetext: true,
-        textxalign: "center",
-        textsize: 8,
-      },
-      (err, png) => {
-        if (err) {
-          res.status(500).send("Error generating barcode");
-        } else {
-          res.type("image/png");
-          res.send(png);
-        }
+    // ✅ Generate barcode with URL encoded
+    bwipjs.toBuffer({
+      bcid: "code128", 
+      text: data.scanUrl,       // <== Real URL here
+      scale: 1,                 // Smaller size
+      height: 8,
+      includetext: true,
+      textxalign: "center",
+      textsize: 8
+    }, (err, png) => {
+      if (err) {
+        res.status(500).send("Error generating barcode");
+      } else {
+        res.type("image/png");
+        res.send(png);
       }
-    );
+    });
   } catch (error) {
     res.status(500).send("Server error");
   }
 });
+
 
 /*------------------------------------------------------
  ✅ 5. Default Route
