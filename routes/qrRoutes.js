@@ -24,7 +24,7 @@ router.post("/create", async (req, res) => {
 
     for (let details of detailsArray) {
       const uuid = generateShortUUID();
-      const scanUrl = `http://localhost:3000/view/${uuid}`;
+      const scanUrl = `https://barcode.tradebiznetwork.com/view/${uuid}`;
       const newData = new Data({ uuid, details, scanUrl });
       await newData.save();
       savedData.push(newData);
