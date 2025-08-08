@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const qrRoutes = require("./routes/qrRoutes");
 const companyRoutes = require("./routes/companyRoutes");
+const certificateRoutes = require("./routes/certificateRoutes");
+
 
 const app = express();
 app.use(cors());
@@ -17,8 +19,9 @@ mongoose
   .catch((err) => console.error("❌ MongoDB Error:", err));
 
 app.use("/api", qrRoutes); // qr routes ✅ Must be here
-
 app.use("/api/company", companyRoutes); // Company routes ✅ Must be here
+app.use("/api/certificates", certificateRoutes);  // certificates routes ✅ Must be here
+
 
 app.get("/", (req, res) => {
   res.send("✅ QR Code API running (Completely Public Access)");
